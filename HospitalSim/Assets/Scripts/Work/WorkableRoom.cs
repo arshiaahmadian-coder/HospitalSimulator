@@ -61,6 +61,7 @@ public class WorkableRoom : MonoBehaviour
         patient.EndOfService();
         patientsQueue.Remove(patient);
         hasPatient = false;
+        CallNextPatient();
     }
 
     public void PatientArrived()

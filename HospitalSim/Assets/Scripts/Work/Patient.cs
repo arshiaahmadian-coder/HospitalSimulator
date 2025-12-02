@@ -6,13 +6,23 @@ public class Patient : MonoBehaviour
     public RoomType[] RequiredServices;
     public bool searchingForRoom = true;
     public int currentServiceIndex = 0;
+    public bool isGoingOut = false;
     [SerializeField] NavMeshAgent agent;
     public bool isGoingToRoom = false;
     private WorkableRoom serviceRoom;
+    [SerializeField] Transform hospitalExitPos;
 
     private void FixedUpdate()
     {
-        print(isGoingToRoom);
+        if(isGoingOut)
+        {
+            if(!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance &&
+            agent.velocity.sqrMagnitude < 0.01f)
+            {
+                Destroy(gameObject);
+            }
+        }
+
         if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance &&
             agent.velocity.sqrMagnitude < 0.01f &&
             isGoingToRoom) {
@@ -42,14 +52,28 @@ public class Patient : MonoBehaviour
         agent.isStopped = false;
         this.serviceRoom = serviceRoom;
         isGoingToRoom = true;
-        print("ComeToServiceRoom");
+    }
+
+    public void GoOut()
+    {
+        agent.SetDestination(hospitalExitPos.position);
+        agent.isStopped = false;
+        isGoingOut = true;
+        searchingForRoom = false;
     }
 
     public void EndOfService()
     {
         searchingForRoom = true;
         currentServiceIndex++;
-        Debug.Log("patient is ok now");
-        Destroy(gameObject);
+        if(RequiredServices.Length < currentServiceIndex + 1)
+        {
+            // go out
+            GoOut();
+        }
+
+        // go to next service queue
+
+        // Destroy(gameObject);
     }
 }
