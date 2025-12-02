@@ -1,4 +1,5 @@
 using TMPro;
+using Unity.AI.Navigation;
 using UnityEngine;
 
 public class GridPlacementManager : MonoBehaviour
@@ -25,7 +26,10 @@ public class GridPlacementManager : MonoBehaviour
         float scroll = Input.GetAxis("Mouse ScrollWheel");
 
         if(Input.GetMouseButtonDown(1))
+        {
             grid.PlaceBuilding(mouseWorldPos, buildingObj, 1);
+            FindFirstObjectByType<NavMeshSurface>().BuildNavMesh();
+        }
 
         if (scroll > 0f)
         {
