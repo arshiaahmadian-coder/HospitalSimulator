@@ -1,11 +1,14 @@
+using TMPro;
 using UnityEngine;
 
 public class GridPlacementManager : MonoBehaviour
 {
     Grid grid;
-    [SerializeField] GameObject buildingObj;
+    public GameObject buildingObj;
     [SerializeField] GameObject buildingPreviewObj;
     [SerializeField] GameObject baseObj;
+    [SerializeField] TMP_Text roomNameText;
+    [SerializeField] GameObject[] roomPrefabs;
 
     private bool isInBuildingState = false;
     private void Start()
@@ -19,8 +22,18 @@ public class GridPlacementManager : MonoBehaviour
         if(!isInBuildingState) return;
 
         Vector3 mouseWorldPos = GetMouseWorldPosition();
-        if(Input.GetMouseButtonDown(0))
-            grid.PlaceBuilding(mouseWorldPos, buildingObj, 2);
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+
+        if(Input.GetMouseButtonDown(1))
+            grid.PlaceBuilding(mouseWorldPos, buildingObj, 1);
+
+        if (scroll > 0f)
+        {
+            buildingPreviewObj.transform.Rotate(0, 90, 0);
+        } else if (scroll < 0f)
+        {
+            buildingPreviewObj.transform.Rotate(0, -90, 0);
+        }
 
         grid.RePositionPreview(mouseWorldPos);
     }
@@ -41,5 +54,12 @@ public class GridPlacementManager : MonoBehaviour
     {
         isInBuildingState = !isInBuildingState;
         buildingPreviewObj.SetActive(isInBuildingState);
+        roomNameText.text = buildingObj.name;
+    }
+
+    public void SetSelectedRoom(int roomIndex)
+    {
+        buildingObj = roomPrefabs[roomIndex];
+        roomNameText.text = buildingObj.name;
     }
 }
